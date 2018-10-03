@@ -93,64 +93,6 @@ If you allocate memory for an object and keep a reference to it even though you 
 
 <script src="https://gist.github.com/042905499db9824118027fd68d05986b.js"></script> 
 
-
-    
-    File: redis_prometheus_exporter.yaml
-    ------------------------------------
-    
-    apiVersion: extensions/v1beta1
-    kind: Deployment
-    metadata:
-      name: redis
-    spec:
-      replicas: 1
-      template:
-        metadata:
-          annotations:
-            prometheus.io/scrape: "true"
-            prometheus.io/port: "9121"
-          labels:
-            app: redis
-        spec:
-          containers:
-          - name: redis
-            image: redis:4
-            resources:
-              requests:
-                cpu: 100m
-                memory: 100Mi
-            ports:
-            - containerPort: 6379
-          - name: redis-exporter
-            image: oliver006/redis_exporter:latest
-            resources:
-              requests:
-                cpu: 100m
-                memory: 100Mi
-            ports:
-            - containerPort: 9121
-    ---
-    kind: Service
-    apiVersion: v1
-    metadata:
-      name: redis
-    spec:
-      selector:
-        app: redis
-      ports:
-      - name: redis
-        protocol: TCP
-        port: 6379
-        targetPort: 6379
-      - name: prom
-        protocol: TCP
-        port: 9121
-        targetPort: 9121
-    
-    
-
-
-
 Also, when you open a resource like a stream and don't close it, if it goes out of scope it will remain open and continue to consume heap. A good solution to this is to use the "[try with resource][7]" blocks that were released with Java 7.
 
 In Java, when you are not able to reserve more memory the JVM throws an exception called [java.lang.OutOfMemoryError][8] and terminates the program.
